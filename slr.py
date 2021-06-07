@@ -73,27 +73,7 @@ if __name__ == "__main__":
 
 	# Check the grammar so far
 	print("Grammar so far:",gr)
-
-
-	# Create the Prime nonterminal (S' or Goal' in most cases)
-	primeNonTerminal = gr.start + "'"
-
-	# The prime goes directly to the first one, so we create a rule that
-	# serves ONLY as the pointer, per the specification
-	primeRule = grammar.Rule(primeNonTerminal, [gr.start])
-
-	# Add the prime rules as non terminal
-
-	gr.non_terminals.add(primeNonTerminal)
-
-	print(primeRule)
-
-	# Put the prime rule at the begining
-
-	gr.rules.insert(0, primeRule)
-
 	
-
 	# finish computing prime rule
 
 	# Now compute the first
@@ -102,9 +82,47 @@ if __name__ == "__main__":
 
 	gr.make_group_cache()
 
-	print("Grammar so far WITH PRIME' RULE:",gr)
+	gr.make_first()
 
-	
+	print("Grammar so far WITH FIRST:",gr)
+
+	print("FIRSTs generated, computing follows")
+
+	gr.make_follows()
+
+	print("Grammar with FOLLOWS:", gr)
+
+	print("Computed follows")
+
+	print("Extending with PRIME")
+
+	# I used to think this was before the follow and first
+
+
+	# Create prime production
+
+	prime_left = gr.start + "'"
+
+	prime_right = [ gr.start ] # a rule with only one symbol: the start
+
+
+	prime_rule = grammar.Rule(prime_left, prime_right)
+
+	# Add the prime rule to THE begining
+
+	gr.rules.insert(0, prime_rule)
+
+	print("Computed prime extension")
+
+	print(gr.rules)
+
+	print("FIRST:", gr.first)
+
+	print("FOLLOWS:", gr.follows)
+
+
+
+
 
 
 
