@@ -9,6 +9,7 @@ This is the entrypoint of the program
 
 import grammar
 import sys # This has the arguments
+import export_html # Module to help with rendering. This is NOT used for computation
 
 # Utility functions for this file
 
@@ -120,9 +121,6 @@ if __name__ == "__main__":
 
 	print("FOLLOWS:", gr.follows)
 
+	# Make the first & follow export
 
-
-
-
-
-
+	export_html.render_first_follow(gr)

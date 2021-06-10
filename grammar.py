@@ -3,6 +3,20 @@ from dataclasses import dataclass
 
 @dataclass
 class Rule:
+	"""
+	Class that representsa  single rule in
+	a line.
+
+	Example:
+
+	S -> A + int
+
+	Left: S
+	Right: [A, +, int]
+
+	"""
+
+
 	left: str
 	right: List[str]
 
@@ -23,6 +37,10 @@ class Rule:
 
 # Utility function
 def rule_from_line(line: str) -> Rule:
+	"""
+	Utility function to read a single
+	rule from a string in one line
+	"""
 
 	# Split the line based on the 'spaces' operator
 
@@ -40,6 +58,13 @@ def rule_from_line(line: str) -> Rule:
 
 @dataclass()
 class Grammar:
+	"""
+	Class to represent a grammar
+	aquired from a file.
+
+	It contains fields to store the first,
+	follow and methods to generate them
+	"""
 
 	# The list of rules. The rule class has been defined above
 	rules: List[Rule]
@@ -104,6 +129,18 @@ class Grammar:
 
 	
 	def first_of(self, key: str) -> Set[str]:
+		"""
+		For a given key, return the first set
+		of such key. It does so recursively until
+		it reaches the base case, which is a 
+		terminal symbol.
+
+		The first of a termoninal symbol is that terminal symbol.
+
+		The first of a non terminal symbol is
+		the first of the leftmost token on the
+		right set
+		"""
 
 		# Check if this is a non terminal
 		if key in self.non_terminals:
@@ -160,6 +197,14 @@ class Grammar:
 	# All things follow go here
 
 	def rules_with_this_right(self, thing: str) -> List[Rule]:
+		"""
+		Returns a list of rules that have
+		have a given symbol on the right.
+
+		Brute force search.
+		"""
+
+		# Remove the cache in the meantime if it is not working
 		if thing in self.cache_symbols_right.keys():
 			return self.cache_symbols_right[thing]
 
@@ -178,65 +223,76 @@ class Grammar:
 
 		return ls
 
-	# Just like above
-
-	def follows_of(self, key: str) -> Set[str]:
+	def follow_of(self, key: str) -> Set[str]:
 		"""
-		Get the follows of a single element using recursion
+		Returns a follow if it already exists,
+		otherwise it computes it
 		"""
-
-		# Base case: We already have it yay
-		if key in self.follows.keys():
+		
+		# If it already has stuff, just return it
+		if len(self.follows[key]) != 0:
 			return self.follows[key]
 
-		# Otherwise recursion
+		# Put stuff otherwise
+		follow = set()
 
-		f = set()
+		on_right = self.rules_with_this_right(key)
 
-		for rule in self.groups[key]:
-			# Base case: it has it
+		for rule in on_right:
+
 			right = rule.right_of(key)
-			if right:
-				# Call the follow recursion
-				f.update( self.first_of(right)  )
+
+			if len(right) == 0:
+				# Recursive follows because empty
+				follow.update( rule.left )
 			else:
-				# Recursion
-				f.update(self.follows_of(rule.left))
-		
-		return f
+				follow.update( self.first_of(right) )
 
 
-
+		return follow
+	
 	def make_follows(self):
+		"""
+		Function to compute the follows, after
+		of course computing the firsts
+		"""
+
+		# Add all the non terminals into follows,
+		# properly intialized
+
 		for nt in self.non_terminals:
-			self.follows[nt] = set() # empty
+			self.follows[nt] = set()
 		
+		# Add the initial data set (dollar) to the
+		# section of the first symbol
 
-		dollar = { "$" }
+		self.follows[self.start] = { "$" }
 
-		# Put the dollar as a follow of the start
-
-		self.follows[self.start] = dollar
-
+		# Iterate thru all the non terminals
 		for nt in self.non_terminals:
-			data = set()
+			current_follows = self.follows[nt]
 
-			# If empty
-			if len(self.follows[nt]) == 0:
-				data = data
-			else:
-				data = self.follows[nt]
-			
-			for rule in self.rules_with_this_right(nt):
-				# Using cache
+			with_symbol_on_right = self.rules_with_this_right(nt)
+
+			for rule in with_symbol_on_right:
 				right = rule.right_of(nt)
 
-				# base case
-				if len(right) != 0:
-					# We have something
-					data.update( self.first_of(right) )
+				if len(right) == 0:
+
+					# Update with a recursive follow
+					current_follows.update( 
+						self.follow_of(rule.left) 
+					)
 				else:
-					# recursion
-					data.update( self.follows_of(rule.left) )
+					# Update with a first, as defined by the
+					# algorithm
+					current_follows.update(
+						self.first_of(right) 
+					)
 			
-			self.follows[nt] = data
+
+			self.follows[nt] = current_follows
+
+
+
+		pass
