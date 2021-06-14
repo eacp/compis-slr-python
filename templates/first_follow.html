@@ -22,17 +22,9 @@
 				<h2>Augmented Grammar</h2>
 				<br>
 
-				
-				<p> S' -> S </p>
-				
-				<p> S -> ( L ) </p>
-				
-				<p> S -> a </p>
-				
-				<p> L -> L ; S </p>
-				
-				<p> L -> S </p>
-				
+				{% for rule in grammar.rules %}
+				<p> {{rule.left}} -> {{ ' '.join(rule.right) }} </p>
+				{% endfor %}
 			</div>
 
 			<!--Table-->
@@ -48,23 +40,15 @@
 					  </tr>
 					</thead>
 					<tbody>
-					  
+					  {% for nt in grammar.non_terminals %}
 		
 					  <tr>
-						<th scope="row"> L </th>
-						<td> {'a', '('} </td>
-						<td> {')', ';'} </td>
+						<th scope="row"> {{nt}} </th>
+						<td> {{grammar.first[nt]}} </td>
+						<td> {{grammar.follows[nt]}} </td>
 					  </tr>
 					  
-					  
-		
-					  <tr>
-						<th scope="row"> S </th>
-						<td> {'a', '('} </td>
-						<td> {')', ';', '$'} </td>
-					  </tr>
-					  
-					  
+					  {% endfor %}
 					</tbody>
 				  </table>
 				  

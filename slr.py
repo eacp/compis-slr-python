@@ -111,8 +111,6 @@ if __name__ == "__main__":
 
 	# Add the prime rule to THE begining
 
-	gr.rules.insert(0, prime_rule)
-
 	print("Computed prime extension")
 
 	print(gr.rules)
@@ -123,4 +121,8 @@ if __name__ == "__main__":
 
 	# Make the first & follow export
 
+	gr.rules.insert(0, prime_rule)
+
 	export_html.render_first_follow(gr)
+
+	

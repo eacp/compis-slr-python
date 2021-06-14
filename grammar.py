@@ -292,7 +292,3 @@ class Grammar:
 			
 
 			self.follows[nt] = current_follows
-
-
-
-		pass
