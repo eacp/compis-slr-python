@@ -192,11 +192,4 @@ if __name__ == "__main__":
 
 		# Increase the couunt
 		state_numbers[str(jk)] = i
-        i += 1
-
-
-
-
-
-
-	
+		i += 1
