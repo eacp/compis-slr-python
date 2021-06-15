@@ -11,6 +11,9 @@ import grammar
 import sys # This has the arguments
 import export_html # Module to help with rendering. This is NOT used for computation
 
+# Recursivity-ish queue
+from queue import SimpleQueue
+
 # Utility functions for this file
 
 def check_can_be_terminal(candidate: str) -> bool:
@@ -30,6 +33,41 @@ def check_can_be_terminal(candidate: str) -> bool:
 
 	# You CANNOT use islower because it has conflicts with pure non letter text,
 	# such as +
+prod = []
+
+def append_dot(a):
+	"""
+	Appends a dot to the beguining so it is in the read position
+	"""
+	# Just replace the arrow
+	jj = a.replace("->", "->.")
+	return jj
+
+def closure(a):
+	# Temporal list
+    temp = [a]
+
+	# Keep iterating the list
+    for it in temp:
+
+		# Next position after the dot
+        jj = it[it.index(".") + 1]
+
+		# Check the bounds
+        if jj != len(it) - 1:
+            for k in prod:
+
+				# COnditionally add thigs to the queue
+                if k[0][0] == jj and (append_dot(k)) not in temp:
+                    temp.append(append_dot(k))
+        else:
+            for k in prod:
+				# Just make the append option
+                if k[0][0] == jj and it not in temp:
+                    temp.append(it)
+
+    return temp
+
 
 if __name__ == "__main__":
 
@@ -124,5 +162,41 @@ if __name__ == "__main__":
 	gr.rules.insert(0, prime_rule)
 
 	export_html.render_first_follow(gr)
+
+	exit(0)
+	
+	# I had a hard time doing this
+	# Start a queue for the closures
+	q = SimpleQueue()
+
+	q.put(gr.rules[0])
+
+	cs = []
+
+	# We will use a dictionary, but given the class
+	# rule is not hashable, we will use the string instead
+
+	state_numbers = {}
+	dfa_prod = {}
+
+	# The counter that gets assigned to each string representation
+	i = 0
+
+	# Iterate while not empty
+	while not q.empty():
+		jk = q.get()
+
+		ker = jk
+
+		cs.append(jk)
+
+		# Increase the couunt
+		state_numbers[str(jk)] = i
+        i += 1
+
+
+
+
+
 
 	
