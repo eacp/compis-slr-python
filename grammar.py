@@ -1,6 +1,19 @@
 from typing import Set, List, Dict
 from dataclasses import dataclass
 
+# Util
+def check_can_be_terminal(candidate: str) -> bool:
+	"""
+	Returns true if all the letters are lowercase,
+	thus making it a terminal
+	"""
+	lower = candidate.lower()
+
+	# If it was ALL lower, 
+	return candidate == lower
+
+	# You CANNOT use islower because it has conflicts with pure non letter text,
+
 @dataclass
 class Rule:
 	"""
@@ -34,6 +47,15 @@ class Rule:
 			return ""
 		
 		return self.right[idx+1]
+	
+	def __hash__(self) -> int:
+		"""
+		Hash function for a rule.
+
+		Return the hash of the str of this
+		"""
+
+		return hash(str(self))
 
 # Utility function
 def rule_from_line(line: str) -> Rule:

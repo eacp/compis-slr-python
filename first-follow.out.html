@@ -23,15 +23,17 @@
 				<br>
 
 				
-				<p> S' -> S </p>
+				<p> Goal' -> Goal </p>
 				
-				<p> S -> ( L ) </p>
+				<p> Goal -> A </p>
 				
-				<p> S -> a </p>
+				<p> A -> ( A ) </p>
 				
-				<p> L -> L ; S </p>
+				<p> A -> Two </p>
 				
-				<p> L -> S </p>
+				<p> Two -> a </p>
+				
+				<p> Two -> b </p>
 				
 			</div>
 
@@ -51,17 +53,25 @@
 					  
 		
 					  <tr>
-						<th scope="row"> L </th>
-						<td> {'a', '('} </td>
-						<td> {')', ';'} </td>
+						<th scope="row"> Two </th>
+						<td> {'b', 'a'} </td>
+						<td> {')', 'a', 'o', 'G', 'l'} </td>
 					  </tr>
 					  
 					  
 		
 					  <tr>
-						<th scope="row"> S </th>
-						<td> {'a', '('} </td>
-						<td> {')', ';', '$'} </td>
+						<th scope="row"> A </th>
+						<td> {'b', 'a', '('} </td>
+						<td> {'$', ')'} </td>
+					  </tr>
+					  
+					  
+		
+					  <tr>
+						<th scope="row"> Goal </th>
+						<td> {'b', 'a', '('} </td>
+						<td> {'$'} </td>
 					  </tr>
 					  
 					  
