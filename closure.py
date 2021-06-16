@@ -1,6 +1,9 @@
+from os import stat
 from grammar import Grammar, Rule, check_can_be_terminal
 from typing import List, Set
 from dataclasses import dataclass
+
+from queue import Queue
 
 import copy # For making clones
 
@@ -59,6 +62,9 @@ class AutomataRule(Rule):
 		# Insert the dot in a new place
 		other.right.insert(idx + 2, ".") # Add two cuz we want the one after after (after the symbol after)
 
+		other.right.remove(".") # Remove first occurence of ., essentially removing it
+
+
 		return other
 		
 
@@ -73,23 +79,58 @@ class State:
 		self.kernel = set()
 		self.closure = set()
 
-@dataclass
+	def all_that_have_dot_before(self, s: str) -> Set[AutomataRule]:
+		"""
+		This funct iterates thru all the rules in this state
+		to see in which ones the next element is equal to a given string.
+
+		This is equivalent of doing so visually in a notebook
+		"""
+		the_set: Set[AutomataRule] = set( 
+			filter(
+				# Disc funtion: all that have s in the nexts
+				lambda r: (r.next_symbol() == s ),
+				# Look in the closure
+				self.closure 
+				) 
+			)
+		
+		print(the_set)
+		
+		# Return a copy to avoid making accidental modifications
+		return the_set.copy()
+		
+
+
+
+
+@dataclass(init=False)
 class GoTo:
+	"""
+	This class represents a Go To
+	"""
 	from_state: int
 	to_state: int
-	symbol: str
-	goes_to_prev: bool
+	symbol: str = ""
+	goes_to_prev: bool = False
+
+	def __init__(self, fs: int, sym: str) -> None:
+		"""
+		Short constructor: Receives the symbol to go to and
+		the from
+		"""
+		self.from_state = fs
+		self.symbol = sym
 
 
 # Global is dirty but more or less works
 
-count = -1
+# From the algo
 
-state = -1
 states: List[State] = []
 prods: List[AutomataRule]  = []
 gotos: List[GoTo] = []
-rem: List[GoTo] = []
+rem: "Queue[GoTo]" = Queue()
 
 def state_closure(state: State, g: Grammar):
 	# Copy the kernel into the closure to begin
@@ -125,6 +166,10 @@ def state_closure(state: State, g: Grammar):
 				for rule in right_of:
 					clone = copy.copy(rule)
 
+					# Add the . in case it is not here
+					if "." not in clone.right:
+						clone.right = ["."] + clone.right
+
 					data.add( AutomataRule(clone.left, clone.right) )
 		
 
@@ -138,41 +183,116 @@ def state_closure(state: State, g: Grammar):
 
 
 
-def make_closures_from_grammar(g: Grammar) -> List[State]:	
-	# Here convert the existing rules into 
-	# rules that have the dot in the front
-	for rule in g.rules:
+def make_closures_from_grammar(gr: Grammar) -> List[State]:
+	for rule in gr.rules:
+		# Create an augmented version of the rule and insert it
+		augmented = AutomataRule(rule.left, ["."] + rule.right.copy())
+		prods.append(augmented)
 
-		# Create it with the dot in the front
-		extended = AutomataRule(rule.left,  ["."]  + rule.right)
+	print("Prods with dot", prods)
 
-		prods.append(extended)
+	# A new state to be used for later purposess
+	initial_s = State()
 
-	# Create the initial state
+	# Create the first kernel
 
-	init_state = State()
+	kernel0 = { prods[0] }
 
-	# Initialize the first kernel
-	
+	initial_s.kernel = kernel0
 
-	init_state.kernel = { prods[0] } 
+	state_closure(initial_s, gr)
+
+	# Save the computed state
+	states.append(initial_s)
 
 
-	# This will alter the state
-	state_closure(init_state, g)
+	for rule in states[0].closure:
+		if not rule.dot_is_last():
+			# Make a goto from scratch
+			got = GoTo(0, rule.next_symbol() )
+			gotos.append(got)
 
-	# Insert the state in the array
-	states.append(init_state)
+			rem.put(got)
 
-	print("Initial state with closure computed")
+			states[0].accepted = False
+		else:
+			# Only accept
+			states[0].accepted = True
+
+
+	# SLR Construction---------------------
+
+	while not rem.empty():
+		g = rem.get()
+
+		
+		new_state = State()
+
+		s = states[g.from_state]
+
+		# Get all that have a dot before a symbol
+		k = s.all_that_have_dot_before(g.symbol)
+
+		k2: Set[AutomataRule] = set()
+
+		for rule in k:
+			k2.add( rule.shift_period() )
+
+		# Get all kernels
+		kernels = [xs.kernel for xs in states]
+
+
+		# Check if at least one is the same, and save its index
+		pos = -1
+
+		for key, v in enumerate(kernels):
+			# Check if the current one (v) matches what we are looking for
+			if v == k2:
+				pos = key
+				break
+		
+
+		if pos != -1:
+			g.to_state = pos
+			g.goes_to_prev = True
+
+
+			#update
+			index = gotos.index(g)
+
+			gotos[index].to_state = pos
+		else:
+			new_state.kernel = k2
+
+			state_closure(new_state, gr)
+
+			states.append(new_state)
+
+			# Index of the last one added
+			g.to_state = len(states) - 1
+
+			index = gotos.index(g)
+
+			gotos[index].to_state = len(states) - 1
+
+			N = len(states) - 1
+
+			for rule in states[N].closure:
+				if not rule.dot_is_last():
+
+					# Add them to the list of gotos
+					go = GoTo(N, rule.next_symbol() )
+
+					gotos.append(go)
+
+					rem.put(go)
+				else:
+					# Just accept
+					states[N].accepted = True
+
+
+
+
+
 
 	return states
-
-
-
-
-
-
-	
-	
-

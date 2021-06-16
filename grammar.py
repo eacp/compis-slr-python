@@ -38,6 +38,9 @@ class Rule:
 	def right_of(self, symbol: str) -> str:
 		# Find the index.
 		# Complexity O(n)
+		if symbol not in self.right:
+			return ""
+
 		idx = self.right.index(symbol)
 
 		# Avoid overflow
