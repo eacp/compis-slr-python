@@ -7,10 +7,30 @@
 	<title>First & Follow</title>
 
 	<!--Style-->
-	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootswatch@5/dist/united/bootstrap.min.css">
+	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootswatch@5/dist/quartz/bootstrap.min.css">
 
 </head>
 <body>
+
+	<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+		<div class="container">
+		  <a class="navbar-brand" href="#">SLR</a>
+		  <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+			<span class="navbar-toggler-icon"></span>
+		  </button>
+		  <div class="collapse navbar-collapse" id="navbarNav">
+			<ul class="navbar-nav">
+			  <li class="nav-item">
+				<a class="nav-link active" href="first-follow.out.html">First & Follow</a>
+			  </li>
+			  <li class="nav-item">
+				<a class="nav-link" href="states.out.html">States</a>
+			  </li>
+			</ul>
+		  </div>
+		</div>
+	  </nav>
+
 	<section class="container">
 		<br>
 		<h1>First & Follow table</h1>
@@ -18,40 +38,52 @@
 		<div class="row">
 
 			<!--Grammar-->
-			<div class="col">
-				<h2>Augmented Grammar</h2>
-				<br>
-
-				{% for rule in grammar.rules %}
-				<p> {{rule.left}} -> {{ ' '.join(rule.right) }} </p>
-				{% endfor %}
+			<div class="col-sm-6">
+				<div class="card border-dark">
+					<div class="card-header">
+					  Augmented Grammar
+					</div>
+					<div class="card-body">
+					  <h5 class="card-title">Kernel</h5>
+					  
+					  {% for rule in grammar.rules %}
+					<p> {{rule.left}} -> {{ ' '.join(rule.right) }} </p>
+					{% endfor %}
+					</div>
+				  </div>
+				  <br>
 			</div>
 
 			<!--Table-->
-			<div class="col">
-				<h2>Table</h2>
-
-				<table class="table table-striped">
-					<thead>
-					  <tr>
-						<th scope="col">#</th>
-						<th scope="col">First</th>
-						<th scope="col">Follow</th>
-					  </tr>
-					</thead>
-					<tbody>
-					  {% for nt in grammar.non_terminals %}
-		
-					  <tr>
-						<th scope="row"> {{nt}} </th>
-						<td> {{grammar.first[nt]}} </td>
-						<td> {{grammar.follows[nt]}} </td>
-					  </tr>
-					  
-					  {% endfor %}
-					</tbody>
-				  </table>
-				  
+			<div class="col-sm-6">
+				<div class="card border-dark">
+					<div class="card-header">
+					  Table
+					</div>
+					<div class="card-body">
+						<table class="table table-striped">
+							<thead>
+							  <tr>
+								<th scope="col">#</th>
+								<th scope="col">First</th>
+								<th scope="col">Follow</th>
+							  </tr>
+							</thead>
+							<tbody>
+							  {% for nt in grammar.non_terminals %}
+				
+							  <tr>
+								<th scope="row"> {{nt}} </th>
+								<td> {{grammar.first[nt]}} </td>
+								<td> {{grammar.follows[nt]}} </td>
+							  </tr>
+							  
+							  {% endfor %}
+							</tbody>
+						  </table>
+					</div>
+				  </div>
+				  <br>
 			</div>
 
 		</div>
@@ -61,5 +93,7 @@
 		
 
 	</section>
+	<!--Nice menu-->
+	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/js/bootstrap.bundle.min.js" integrity="sha384-gtEjrD/SeCtmISkJkNUaaKMoLD0//ElJ19smozuHV6z3Iehds+3Ulb9Bn9Plx0x4" crossorigin="anonymous"></script>
 </body>
 </html>

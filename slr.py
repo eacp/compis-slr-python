@@ -116,3 +116,7 @@ if __name__ == "__main__":
 	states = make_closures_from_grammar(gr)
 
 	print(states)
+
+	 # Export them
+
+	export_html.render_states(states)
