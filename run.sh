@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 # Please remember to use chmod +x run.sh to make this executable
 
